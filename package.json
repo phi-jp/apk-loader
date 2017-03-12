@@ -1,0 +1,25 @@
+{
+  "name": "apk-loader",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "node test/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/phi-jp/apk-loader.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/phi-jp/apk-loader/issues"
+  },
+  "homepage": "https://github.com/phi-jp/apk-loader#readme",
+  "dependencies": {
+    "collect-stream": "^1.2.1",
+    "temporary": "^0.0.8",
+    "underscore": "^1.8.3",
+    "yauzl": "^2.7.0"
+  }
+}
