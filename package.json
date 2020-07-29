@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/phi-jp/apk-loader#readme",
   "dependencies": {
+    "app-info-parser": "^0.3.10",
     "collect-stream": "^1.2.1",
     "temporary": "^0.0.8",
     "underscore": "^1.8.3",
