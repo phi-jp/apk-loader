@@ -1,51 +1,38 @@
 
 var fs = require('fs');
-var os = require('os');
-var path = require('path');
-var exec = require('child_process').exec;
 var _ = require('underscore');
 
 var yauzl = require('yauzl')
 var collect = require('collect-stream');
 var tmp = require('temporary');
 var output = new tmp.Dir();
+const AppInfoParser = require('app-info-parser')
 
 module.exports = {
   _load: function(zip, filepath, callback) {
     var p1 = this.aapt(filepath);
     var p2 = this.icon(zip);
-
     Promise.all([p1, p2]).then(function(values) {
       callback(null, _.extend(values[0], values[1]));
     });
   },
-  aapt: function(filepath) {
-    return new Promise(function(resolve, reject) {
-      var aapt = path.join(__dirname, 'bin', 'aapt_' + os.platform());
-      var command = aapt + " d badging " + filepath;
-      exec(command, function(error, stdout, stderr) {
-        if (error) {
-          reject(error);
-        }
-        else if (stdout) {
-          var appName = stdout.match(/application: label='([^']+)'/)[1];
-          var packageName = stdout.match(/name='([^']+)'/)[1];
-          var versionName = stdout.match(/versionName='([^']+)'/)[1];
-          var versionCode = stdout.match(/versionCode='(\d+)'/)[1];
-          resolve({
-            name: appName,
-            identifier: packageName,
-            version: versionName,
-            versionCode: versionCode,
-          });
-        }
-      });
+  aapt: async function(filepath) {
+    return new Promise(async (resolve, reject) => {
+      const parser = new AppInfoParser(filepath);
+      const { package,  versionCode, versionName, application } = await parser.parse()
+      const name = application.label[0];
+      resolve({
+        name, 
+        identifier: package,
+        versionCode, 
+        version: versionName,
+      })
     });
   },
   icon: function(zip) {
     return new Promise(function(resolve) {
       zip.on('entry', function(entry) {
-        if (/res\/drawable\/icon\.png$/.test(entry.fileName)) {
+        if (/res\/mipmap-xxhdpi-v26\/ic_launcher_foreground\.png$/.test(entry.fileName)) {
           // read icon stream
           zip.openReadStream(entry, function(err, stream){
             // read buffer
